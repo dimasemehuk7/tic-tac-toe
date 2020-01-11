@@ -1,0 +1,44 @@
+.grid-row > td {
+    position: relative;
+    height: 25px;
+    width: 25px;
+    border: 1px solid black;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+#grid {
+    border-collapse: collapse;
+}
+
+.elementX {
+    position: relative;
+    transform: rotate(45deg);
+}
+
+.line-y {
+    position: absolute;
+    height: 20px;
+    width: 3px;
+    left: 11.5px;
+    background: blue;
+    top: -9.5px;
+}
+
+.line-x {
+    position: absolute;
+    height: 3px;
+    width: 20px;
+    top: -1px;
+    background: blue;
+    left: 2.5px;
+}
+
+.elementO {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 3px solid red;
+    margin: 0 auto;
+}
