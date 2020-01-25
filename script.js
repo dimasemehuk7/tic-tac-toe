@@ -1,55 +1,154 @@
+const GRID_SIZE = 15;
+const X_TYPE = 'X';
+const O_TYPE = 'O';
+const MINIMUM_LENGTH_FOR_WIN = 5;
+let winnerExists = false;
+let isX = true;
+
 const grid = document.querySelector('#grid');
 const gridBody = document.createElement('tbody');
 grid.appendChild(gridBody);
 
-const gridSize = 10;
-const xType = 'X';
-const oType = 'O';
+const playAgainBtn = document.querySelector('#playAgainBtn');
 
-for (let r = 0; r < gridSize; r++) {
+playAgainBtn.addEventListener('click', function (event) {
+    const tdElements = document.querySelectorAll('td');
+    for (let i = 0; i < tdElements.length; i++) {
+       tdElements[i].innerHTML = '';
+    }
+    winnerExists = false;
+    isX = true;
+});
+
+for (let r = 0; r < GRID_SIZE; r++) {
     const tr = createRow(r);
-    for (let c = 0; c < gridSize; c++) {
+    for (let c = 0; c < GRID_SIZE; c++) {
         tr.appendChild(createCell(r, c, onCellClick));
     }
     gridBody.appendChild(tr);
 }
 
-let isX = true;
-
 function onCellClick(event) {
+    if (winnerExists) {
+        return;
+    }
     const cell = event.currentTarget;
     if (cell.innerHTML) {
         return;
     }
-console.log(cell);
     const elem = isX ? createX() : createO();
     cell.appendChild(elem);
-    const winnerLine = getWinnerLine(cell, isX); // null | array with 5 or more elements
+    const winnerLine = getWinnerLine(cell);
     if (winnerLine) {
-        highlightWinnerLine(winnerLine);
-        showAlert((isX ? 'X' : 'O') + ' win!!!');
+        winnerExists = true;
+        const currentSymbolType = isX ? X_TYPE : O_TYPE;
+        setTimeout( function () {
+            highlightWinnerLine(winnerLine);
+            showAlert(currentSymbolType + ' win!!!');
+        }, 0)
     }
     isX = !isX;
 }
 
+function getWinnerLine(currentCell) {
 
-function getWinnerLine(currentCell, isX) {
     const verticalLine = getVerticalLine(currentCell);
-    if (verticalLine.length >= 5) {
+    if (verticalLine.length >= MINIMUM_LENGTH_FOR_WIN) {
         return verticalLine;
     }
 
-    const horizontalLine = getHorizontalLine(currentCell); // getHorizontalLine всегда возвращает массив. Либо с одним элементом либо больше
-    if (horizontalLine.length >= 5) {
+    const horizontalLine = getHorizontalLine(currentCell);
+    if (horizontalLine.length >= MINIMUM_LENGTH_FOR_WIN) {
         return horizontalLine;
     }
 
-   // TODO найти левую и парвую диагональ
-    return null;
+    const leftDiagonalLine = getLeftDiagonalLine(currentCell);
+    if (leftDiagonalLine.length >= MINIMUM_LENGTH_FOR_WIN) {
+        return leftDiagonalLine;
+    }
 
-    function getHorizontalLine() {
-        const result = [currentCell.firstChild];
-        // TODO нйдет все элементы по горизонтали
+    const rightDiagonalLine = getRightDiagonalLine(currentCell);
+    if (rightDiagonalLine.length >= MINIMUM_LENGTH_FOR_WIN) {
+        return rightDiagonalLine;
+    }
+
+    function getRightDiagonalLine(currentCell) {
+        const currentElem = currentCell.firstChild;
+        const type = currentElem.getAttribute('type');
+        const result = [currentElem];
+        let row = currentCell.getAttribute('r');
+        let col = currentCell.getAttribute('c');
+        while (++col < GRID_SIZE && --row >= 0) {
+            const elem = findElemByCoords(row, col);
+            if (elem && type === elem.getAttribute('type')) {
+                result.push(elem);
+                continue;
+            }
+            break;
+        }
+        row = currentCell.getAttribute('r');
+        col = currentCell.getAttribute('c');
+        while (--col >= 0 && ++row < GRID_SIZE) {
+            const elem = findElemByCoords(row, col);
+            if (elem && type === elem.getAttribute('type')) {
+                result.push(elem);
+                continue;
+            }
+            break;
+        }
+        return result;
+    }
+
+    function getLeftDiagonalLine(currentCell) {
+        const currentElem = currentCell.firstChild;
+        const type = currentElem.getAttribute('type');
+        const result = [currentElem];
+        let row = currentCell.getAttribute('r');
+        let col = currentCell.getAttribute('c');
+        while (--col >= 0 && --row >= 0) {
+            const elem = findElemByCoords(row, col);
+            if (elem && type === elem.getAttribute('type')) {
+                result.push(elem);
+                continue;
+            }
+            break;
+        }
+        row = currentCell.getAttribute('r');
+        col = currentCell.getAttribute('c');
+        while (++col < GRID_SIZE && ++row < GRID_SIZE) {
+            const elem = findElemByCoords(row, col);
+            if (elem && type === elem.getAttribute('type')) {
+                result.push(elem);
+                continue;
+            }
+            break;
+        }
+        return result;
+    }
+
+    function getHorizontalLine(currentCell) {
+        const currentElem = currentCell.firstChild;
+        const type = currentElem.getAttribute('type');
+        const result = [currentElem];
+        let row = currentCell.getAttribute('r');
+        let col = currentCell.getAttribute('c');
+        while (--col >= 0) {
+            const elem = findElemByCoords(row, col);
+            if (elem && type === elem.getAttribute('type')) {
+                result.push(elem);
+                continue;
+            }
+            break;
+        }
+        col = currentCell.getAttribute('c');
+        while (++col < GRID_SIZE) {
+            const elem = findElemByCoords(row, col);
+            if (elem && type === elem.getAttribute('type')) {
+                result.push(elem);
+                continue;
+            }
+            break;
+        }
         return result;
     }
 
@@ -64,24 +163,27 @@ function getWinnerLine(currentCell, isX) {
             if (elem && type === elem.getAttribute('type')) {
                 result.push(elem);
                 continue;
-            };
+            }
             break;
         }
         row = currentCell.getAttribute('r');
-        while (++row < gridSize) {
+        while (++row < GRID_SIZE) {
             const elem = findElemByCoords(row, col);
             if (elem && type === elem.getAttribute('type')) {
                 result.push(elem);
                 continue;
-            };
+            }
             break;
         }
         return result;
     }
 }
 
-function highlightWinnerLine() {
-
+function highlightWinnerLine(winnerLine) {
+    for (let i = 0; i < winnerLine.length; i++) {
+        const elem = winnerLine[i];
+        elem.classList.add('winner');
+    }
 }
 
 function showAlert(message) {
@@ -111,7 +213,7 @@ function createRow(rowIndex) {
 
 function createX() {
     const xElement = document.createElement("div");
-    xElement.setAttribute('type', xType);
+    xElement.setAttribute('type', X_TYPE);
     xElement.classList.add("elementX");
     const lineY = document.createElement("div");
     lineY.classList.add("line-y");
@@ -124,7 +226,7 @@ function createX() {
 
 function createO() {
     const oElement = document.createElement("div");
-    oElement.setAttribute('type', oType);
+    oElement.setAttribute('type', O_TYPE);
     oElement.classList.add("elementO");
     return oElement;
 }
