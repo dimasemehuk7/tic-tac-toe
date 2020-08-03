@@ -2,7 +2,8 @@
     position: relative;
     height: 25px;
     width: 25px;
-    border: 1px solid #000;
+    border: 1px solid rgb(42, 110, 110);
+    background-color: rgb(214, 244, 245);
     margin: 0;
     padding: 0;
     align-items: center;
@@ -10,6 +11,7 @@
 
 #grid {
     border-collapse: collapse;
+    margin: 10px auto
 }
 
 .elementX {
@@ -121,3 +123,17 @@
 }
 
  }    
+
+ #playAgainBtn {
+     position: absolute;
+    border: none;
+    padding: 10px 20px;
+    background-color: darkcyan;
+    color: white;
+    font-weight: 700;
+    font-family: cursive;
+    outline: none;
+    cursor: pointer;
+    left: 50%;
+    margin: 10px -50px;
+ }

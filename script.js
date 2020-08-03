@@ -1,7 +1,7 @@
 const GRID_SIZE = 15;
 const X_TYPE = 'X';
 const O_TYPE = 'O';
-const MINIMUM_LENGTH_FOR_WIN = 5;
+const MINIMUM_LENGTH_FOR_WIN = 4;
 let winnerExists = false;
 let isX = true;
 
